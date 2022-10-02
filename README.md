@@ -1,6 +1,13 @@
+
 # Basic Example
 
 This a minimal example how to create a bootable disk image with the `bootloader` crate.
+
+This code is based on basic example from repository located at:
+
+https://github.com/rust-osdev/bootloader
+
+The code was separated from the booloader to experiment solely with bareprogramming standalone applications.
 
 ## Structure
 
