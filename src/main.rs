@@ -9,7 +9,7 @@ entry_point!(kernel_main);
 const pixel_size: usize = 4;
 const character_size: usize = 10;
 
-pub struct Cursor {
+pub struct Screen {
     x_cursor_position: usize,
     y_cursor_position: usize,
     column_size: usize,
@@ -171,9 +171,9 @@ trait Render {
     }
 }
 
-impl Render for Cursor {
-    fn new() -> Cursor {
-        Cursor {
+impl Render for Screen {
+    fn new() -> Screen {
+        Screen {
             x_cursor_position: 0,
             y_cursor_position: 0,
             character_size: character_size,
@@ -199,10 +199,10 @@ impl Render for Cursor {
 fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     // turn the screen gray
     //draw_screen(boot_info);
-    let mut cursor: Cursor = Render::new();
+    let mut screen: Screen = Render::new();
     let hello = "HELLO WORLD!";
     if let Some(framebuffer) = boot_info.framebuffer.as_mut() {
-        cursor.print_text(hello, framebuffer);
+        screen.print_text(hello, framebuffer);
     }
     loop {}
 }
