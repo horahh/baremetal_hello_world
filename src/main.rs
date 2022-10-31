@@ -33,6 +33,7 @@ trait Render {
             if framebuffer_y != self.get_y() {
                 continue;
             }
+
             *byte = self.get_pixel_color(index, character);
         }
         self.inc_cursor();
@@ -50,17 +51,23 @@ trait Render {
             self.print_char(character, framebuffer)
         }
     }
-    fn get_x(&self) -> usize;
-    fn get_y(&self) -> usize;
-    fn inc_cursor(&mut self);
-    fn get_column_size(&self) -> usize;
     fn get_pixel_color(&self, index: usize, character: char) -> u8 {
         let column_size = self.get_column_size();
         // first get the position x,y relative to the box character which is 10x10
         let x = index % (pixel_size * character_size);
         let y = (index / (column_size)) % character_size;
-        self.draw_char(x / pixel_size, y, character)
+        let screen_character: ScreenCharacter = RenderScreenCharacter::new(character);
+        screen_character.draw_char(x / pixel_size, y, character)
     }
+    fn get_x(&self) -> usize;
+    fn get_y(&self) -> usize;
+    fn inc_cursor(&mut self);
+    fn get_column_size(&self) -> usize;
+}
+
+trait RenderScreenCharacter {
+    fn new(character: char) -> Self;
+    fn get_character(&self) -> char;
     fn draw_char(&self, x: usize, y: usize, character: char) -> u8 {
         // have black frame for the character
         if x < 1 || x > 8 {
@@ -168,6 +175,19 @@ trait Render {
     }
     fn draw_space(&self, x: usize, y: usize) -> u8 {
         0x00
+    }
+}
+
+struct ScreenCharacter {
+    character: char,
+}
+
+impl RenderScreenCharacter for ScreenCharacter {
+    fn new(c: char) -> ScreenCharacter {
+        ScreenCharacter { character: c }
+    }
+    fn get_character(&self) -> char {
+        self.character
     }
 }
 
