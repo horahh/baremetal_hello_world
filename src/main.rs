@@ -198,6 +198,7 @@ impl Render for Screen {
             y_cursor_position: 50,
             character_size: character_size,
             pixel_size: pixel_size,
+            //TODO: need to get screen size from BootInfo data structure
             row_size: 340 * pixel_size,
             column_size: 640 * pixel_size,
         }
