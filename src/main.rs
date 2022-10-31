@@ -7,7 +7,7 @@ use core::panic::PanicInfo;
 entry_point!(kernel_main);
 
 const pixel_size: usize = 4;
-const character_size: usize = 10;
+const character_size: usize = 8;
 
 pub struct Screen {
     x_cursor_position: usize,
@@ -70,10 +70,10 @@ trait RenderScreenCharacter {
     fn get_character(&self) -> char;
     fn draw_char(&self, x: usize, y: usize) -> u8 {
         // have black frame for the character
-        if x < 1 || x > 8 {
+        if x == 0 || x == 7 {
             return 0x00;
         }
-        if y < 1 || y > 8 {
+        if y == 0 || y == 7 {
             return 0x00;
         }
         match self.get_character() {
@@ -92,73 +92,73 @@ trait RenderScreenCharacter {
     }
     fn draw_h(&self, x: usize, y: usize) -> u8 {
         // draw H side lines
-        if x < 3 || x > 6 {
+        if x == 1 || x == 6 {
             return 0xff;
         }
         // draw H horizontal line
-        if y < 6 && y > 3 {
+        if y == 3 {
             return 0xff;
         }
         0x00
     }
     fn draw_e(&self, x: usize, y: usize) -> u8 {
-        if y < 3 || y > 6 {
+        if y == 1 || y == 6 {
             return 0xff;
         }
-        if y == 4 || y == 5 {
+        if y == 3 {
             return 0xff;
         }
-        if x < 3 {
+        if x == 1 {
             return 0xff;
         }
         0x00
     }
     fn draw_l(&self, x: usize, y: usize) -> u8 {
-        if x < 3 {
+        if x == 1 {
             return 0xff;
         }
-        if y > 6 {
+        if y == 6 {
             return 0xff;
         }
         0x00
     }
     fn draw_o(&self, x: usize, y: usize) -> u8 {
-        if x < 3 || x > 6 {
+        if x == 1 || x == 6 {
             return 0xff;
         }
-        if y < 3 || y > 6 {
+        if y == 1 || y == 6 {
             return 0xff;
         }
         0x00
     }
     fn draw_w(&self, x: usize, y: usize) -> u8 {
-        if y > 6 {
+        if y == 6 {
             return 0xff;
         }
-        if x < 3 || x > 6 {
+        if x == 1 || x == 6 {
             return 0xff;
         }
-        if x < 6 && x > 3 {
+        if x == 3 {
             return 0xff;
         }
         0x00
     }
 
     fn draw_r(&self, x: usize, y: usize) -> u8 {
-        if x < 3 {
+        if x == 1 {
             return 0xff;
         }
-        if y < 3 {
+        if y == 1 {
             return 0xff;
         }
-        if (x > 6) && (y < 5) {
+        if (x == 6) && (y <= 4) {
             return 0xff;
         }
-        if y > 3 && y < 6 {
+        if y == 4 {
             return 0xff;
         }
 
-        if x > 4 && (x == y || x == y + 1) {
+        if x > 3 && (x == y) {
             return 0xff;
         }
         0x00
@@ -167,7 +167,7 @@ trait RenderScreenCharacter {
         self.draw_o(x, y)
     }
     fn draw_bang(&self, x: usize, y: usize) -> u8 {
-        if (x < 6 && x > 3) && (y > 6 || y < 5) {
+        if (x == 4) && (y != 5) {
             return 0xff;
         }
 
