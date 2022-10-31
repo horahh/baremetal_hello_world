@@ -6,30 +6,36 @@ use core::panic::PanicInfo;
 
 entry_point!(kernel_main);
 
+const pixel_size: usize = 4;
+const character_size: usize = 10;
+
 pub struct Cursor {
     x_cursor_position: usize,
     y_cursor_position: usize,
     column_size: usize,
     row_size: usize,
+    character_size: usize,
+    pixel_size: usize,
 }
 
 trait Render {
     fn new() -> Self;
     fn print_char(&mut self, character: char, framebuffer: &mut FrameBuffer) {
+        let column_size = self.get_column_size();
         for (index, byte) in framebuffer.buffer_mut().iter_mut().enumerate() {
             // pick column
-            if (index % (640 * 4)) > (self.get_x() + 1) * 10 * 4 {
+            if (index % (column_size)) > (self.get_x() + 1) * character_size * pixel_size {
                 continue;
             }
-            if (index % (640 * 4)) < (self.get_x()) * 10 * 4 {
+            if (index % (column_size)) < (self.get_x()) * character_size * pixel_size {
                 continue;
             }
 
             // pick row
-            if index > (640 * 4 * 10 * (self.get_y() + 1)) {
+            if index > (column_size * pixel_size * (self.get_y() + 1)) {
                 continue;
             }
-            if index < (640 * 4 * 10 * (self.get_y())) {
+            if index < (column_size * pixel_size * (self.get_y())) {
                 continue;
             }
             *byte = self.get_pixel_color(index, character);
@@ -44,11 +50,13 @@ trait Render {
     fn get_x(&self) -> usize;
     fn get_y(&self) -> usize;
     fn inc_cursor(&mut self);
+    fn get_column_size(&self) -> usize;
     fn get_pixel_color(&self, index: usize, character: char) -> u8 {
+        let column_size = self.get_column_size();
         // first get the position x,y relative to the box character which is 10x10
-        let x = index % 40;
-        let y = (index / (640 * 4)) % 10;
-        self.draw_char(x / 4, y, character)
+        let x = index % (pixel_size * character_size);
+        let y = (index / (column_size)) % character_size;
+        self.draw_char(x / pixel_size, y, character)
     }
     fn draw_char(&self, x: usize, y: usize, character: char) -> u8 {
         // have black frame for the character
@@ -165,8 +173,10 @@ impl Render for Cursor {
         Cursor {
             x_cursor_position: 0,
             y_cursor_position: 0,
-            row_size: 340 * 4,
-            column_size: 640 * 4,
+            character_size: character_size,
+            pixel_size: pixel_size,
+            row_size: 340 * pixel_size,
+            column_size: 640 * pixel_size,
         }
     }
     fn get_x(&self) -> usize {
@@ -177,6 +187,9 @@ impl Render for Cursor {
     }
     fn inc_cursor(&mut self) {
         self.x_cursor_position += 1;
+    }
+    fn get_column_size(&self) -> usize {
+        self.column_size
     }
 }
 
