@@ -195,7 +195,7 @@ impl Render for Screen {
     fn new() -> Screen {
         Screen {
             x_cursor_position: 0,
-            y_cursor_position: 0,
+            y_cursor_position: 50,
             character_size: character_size,
             pixel_size: pixel_size,
             row_size: 340 * pixel_size,
