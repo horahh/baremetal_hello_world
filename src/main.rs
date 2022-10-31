@@ -51,6 +51,24 @@ trait Render {
             self.print_char(character, framebuffer)
         }
     }
+    fn print_screen(&mut self, text: &str, framebuffer: &mut FrameBuffer) {
+        let column_size = self.get_column_size();
+        let max_index =
+            ((text.len() / (80 * 4)) + 1) * 80 * character_size * character_size * pixel_size;
+        for (index, byte) in framebuffer.buffer_mut().iter_mut().enumerate() {
+            if index > max_index {
+                break;
+            }
+            let (x, y) = self.get_xy_from_buffer_index(index);
+            let screen_position: usize = x + (y * 80);
+            if screen_position >= text.len() {
+                continue;
+            }
+            let text_position = screen_position; //- (self.get_y() * 80);
+            let character = text.chars().nth(text_position).unwrap();
+            *byte = self.get_pixel_color(index, character);
+        }
+    }
     fn get_pixel_color(&self, index: usize, character: char) -> u8 {
         let column_size = self.get_column_size();
         // first get the position x,y relative to the box character which is 10x10
@@ -223,7 +241,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     let mut screen: Screen = Render::new();
     let hello = "HELLO WORLD!";
     if let Some(framebuffer) = boot_info.framebuffer.as_mut() {
-        screen.print_text(hello, framebuffer);
+        screen.print_screen(hello, framebuffer);
     }
     loop {}
 }
