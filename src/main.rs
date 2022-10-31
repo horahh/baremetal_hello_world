@@ -24,23 +24,26 @@ trait Render {
         let column_size = self.get_column_size();
         for (index, byte) in framebuffer.buffer_mut().iter_mut().enumerate() {
             // pick column
-            if (index % (column_size)) > (self.get_x() + 1) * character_size * pixel_size {
-                continue;
-            }
-            if (index % (column_size)) < (self.get_x()) * character_size * pixel_size {
+            let (framebuffer_x, framebuffer_y) = self.get_xy_from_buffer_index(index);
+            if framebuffer_x != self.get_x() {
                 continue;
             }
 
             // pick row
-            if index > (column_size * character_size * (self.get_y() + 1)) {
-                continue;
-            }
-            if index < (column_size * character_size * (self.get_y())) {
+            if framebuffer_y != self.get_y() {
                 continue;
             }
             *byte = self.get_pixel_color(index, character);
         }
         self.inc_cursor();
+    }
+    fn get_xy_from_buffer_index(&self, index: usize) -> (usize, usize) {
+        let column_size = self.get_column_size();
+        let character_bytes = character_size * pixel_size;
+        let column_index = index % column_size;
+        let x = column_index / character_bytes;
+        let y = index / (character_size * column_size);
+        (x, y)
     }
     fn print_text(&mut self, text: &str, framebuffer: &mut FrameBuffer) {
         for character in text.chars() {
