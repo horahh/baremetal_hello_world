@@ -32,10 +32,10 @@ trait Render {
             }
 
             // pick row
-            if index > (column_size * pixel_size * (self.get_y() + 1)) {
+            if index > (column_size * character_size * (self.get_y() + 1)) {
                 continue;
             }
-            if index < (column_size * pixel_size * (self.get_y())) {
+            if index < (column_size * character_size * (self.get_y())) {
                 continue;
             }
             *byte = self.get_pixel_color(index, character);
