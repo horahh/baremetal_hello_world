@@ -57,7 +57,7 @@ trait Render {
         let x = index % (pixel_size * character_size);
         let y = (index / (column_size)) % character_size;
         let screen_character: ScreenCharacter = RenderScreenCharacter::new(character);
-        screen_character.draw_char(x / pixel_size, y, character)
+        screen_character.draw_char(x / pixel_size, y)
     }
     fn get_x(&self) -> usize;
     fn get_y(&self) -> usize;
@@ -68,7 +68,7 @@ trait Render {
 trait RenderScreenCharacter {
     fn new(character: char) -> Self;
     fn get_character(&self) -> char;
-    fn draw_char(&self, x: usize, y: usize, character: char) -> u8 {
+    fn draw_char(&self, x: usize, y: usize) -> u8 {
         // have black frame for the character
         if x < 1 || x > 8 {
             return 0x00;
@@ -76,7 +76,7 @@ trait RenderScreenCharacter {
         if y < 1 || y > 8 {
             return 0x00;
         }
-        match character {
+        match self.get_character() {
             'H' => return self.draw_h(x, y),
             'E' => return self.draw_e(x, y),
             'L' => return self.draw_l(x, y),
