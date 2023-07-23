@@ -15,6 +15,21 @@ The kernel code is in `src/main.rs`. It requires some special build instructions
 
 The `simple_boot` sub-crate is responsible for combining the kernel with the bootloader to create bootable disk images. It is configured as a [custom _runner_](https://doc.rust-lang.org/cargo/reference/config.html#targettriplerunner), which means that cargo will automatically invoke it on `cargo run`. The compiled kernel will hereby be passed as an argument.
 
+## Enable Rust nightly
+
+rustup default nightly
+rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+
+## Installation Dependencies
+1) rustup update
+2) rustup target add aarch64-unknown-none thumbv7em-none-eabihf
+3) rustup component add llvm-tools-preview
+4) cargo install cargo-binutils cargo-embed
+5) install qemu
+
+based on:
+https://google.github.io/comprehensive-rust/bare-metal.html
+
 ## Build Commands
 
 The `.cargo/config.toml` file defines command aliases for the common commands:
